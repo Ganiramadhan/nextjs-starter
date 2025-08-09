@@ -34,6 +34,10 @@ export default function Home() {
             title="Husky Hooks"
             desc="Automate code quality checks before commits."
           />
+          <FeatureItem
+            title="CI/CD Deployment"
+            desc="Automate testing and deployment with GitHub Actions."
+          />
         </div>
 
         <Button href="/login" variant="primary" size="md">
