@@ -18,17 +18,17 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: 🚀 Deploy to server via SSH
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script_stop: true
-          command_timeout: 10m
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            git config --global --add safe.directory /home/ganiramadhan/nextjs-starter
             cd /home/ganiramadhan/nextjs-starter
             git fetch --all
             git reset --hard origin/main
             docker compose down
             docker compose up -d --build --remove-orphans --pull always
+
