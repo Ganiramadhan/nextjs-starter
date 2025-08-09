@@ -16,17 +16,19 @@ jobs:
       - name: 🛠 Add known hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
       - name: 🚀 Deploy to server via SSH
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          command_timeout: 10m
           script: |
             cd /home/ganiramadhan/next-app
-            git reset --hard
-            git pull origin main
+            git fetch --all
+            git reset --hard origin/main
             docker compose down
             docker compose up -d --build --remove-orphans --pull always
