@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nextjs-app
+    container_name: new-ganipedia
     ports:
       - "3000:3000"
     restart: always
