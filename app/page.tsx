@@ -7,7 +7,7 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-b from-white to-gray-100 text-gray-800">
       <div className="max-w-2xl w-full text-center">
         <h1 className="text-5xl font-extrabold tracking-tight mb-4">
-          🚀 Welcome to GaniPedia
+          🚀 Welcome to New GaniPedia
         </h1>
         <p className="text-lg text-gray-600 mb-8">
           This project is built with modern web tools and practices.
