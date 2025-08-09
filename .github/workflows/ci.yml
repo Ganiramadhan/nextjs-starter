@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🛠 Add known hosts
+      - name: Add known hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
