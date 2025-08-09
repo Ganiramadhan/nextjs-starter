@@ -1,24 +1,19 @@
-# Dockerfile
-
-FROM node:18-alpine
-
-# Buat direktori kerja
+# Stage 1: Build
+FROM node:18-alpine AS builder
 WORKDIR /app
-
-# Salin file project
-COPY . .
-
-# Enable pnpm
+COPY package*.json ./
 RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# Install dependencies
 RUN pnpm install
-
-# Build Next.js app
+COPY . .
 RUN pnpm build
 
-# Ekspos port
+# Stage 2: Production
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm install --prod --frozen-lockfile
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 EXPOSE 3000
-
-# Jalankan aplikasi
 CMD ["pnpm", "start"]

@@ -2,7 +2,8 @@ name: Deploy Next.js to Docker Server
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -10,7 +11,7 @@ jobs:
 
     steps:
       - name: ⬇️ Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🚀 Deploy to server via SSH
         uses: appleboy/ssh-action@v1.0.0
@@ -20,6 +21,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /home/ganiramadhan/next-app
+            git reset --hard
             git pull origin main
             docker compose down
-            docker compose up -d --build
+            docker compose up -d --build --remove-orphans --pull always
