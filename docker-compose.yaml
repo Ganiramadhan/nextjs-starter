@@ -11,3 +11,5 @@ services:
     restart: always
     env_file:
       - .env.production
+    environment:
+      - PORT=4000
