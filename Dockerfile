@@ -45,5 +45,4 @@ COPY --from=builder /app/public ./public
 # Expose port 4000
 EXPOSE 4000
 
-# Start the application on port 4000
 CMD ["pnpm", "start"]
