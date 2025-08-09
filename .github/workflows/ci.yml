@@ -27,7 +27,7 @@ jobs:
           script_stop: true
           command_timeout: 10m
           script: |
-            cd /home/ganiramadhan/next-app
+            cd /home/ganiramadhan/nextjs-starter
             git fetch --all
             git reset --hard origin/main
             docker compose down
