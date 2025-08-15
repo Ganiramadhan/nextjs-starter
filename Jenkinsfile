@@ -10,12 +10,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                sshagent(credentials: ['github-ssh-key']) {
-                    git(
-                        branch: 'main',
-                        url: 'git@github.com:ganiramadhan/ganipedia.git'
-                    )
-                }
+                git(
+                    branch: 'main',
+                    url: 'https://github.com/ganiramadhan/ganipedia.git',
+                    credentialsId: 'github-https-token' // PAT credential
+                )
             }
         }
 
