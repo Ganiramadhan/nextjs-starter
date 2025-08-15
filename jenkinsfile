@@ -11,8 +11,11 @@ pipeline {
         stage('Checkout') {
             steps {
                 sshagent(credentials: ['github-ssh-key']) {
-                    git branch: 'main',
+                    // Pastikan 'github-ssh-key' adalah ID credential yang ada di Jenkins
+                    git(
+                        branch: 'main',
                         url: 'git@github.com:ganiramadhan/ganipedia.git'
+                    )
                 }
             }
         }
@@ -29,7 +32,11 @@ pipeline {
 
         stage('Push to Registry') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-registry-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-registry-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
                     sh """
                     echo "$DOCKER_PASS" | docker login $DOCKER_REGISTRY -u "$DOCKER_USER" --password-stdin
                     docker push $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
