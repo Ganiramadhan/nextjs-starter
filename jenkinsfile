@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = "registry.ganipedia.xyz:3017"
+        IMAGE_NAME = "ganipedia"
+        IMAGE_TAG = "latest"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                sshagent(credentials: ['github-ssh-key']) {
+                    git branch: 'main',
+                        url: 'git@github.com:ganiramadhan/ganipedia.git'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh """
+                    docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+                    """
+                }
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-registry-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                    echo "$DOCKER_PASS" | docker login $DOCKER_REGISTRY -u "$DOCKER_USER" --password-stdin
+                    docker push $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                    """
+                }
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                script {
+                    sh """
+                    docker rm -f $IMAGE_NAME || true
+                    docker run -d --name $IMAGE_NAME -p 3017:3017 $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                    """
+                }
+            }
+        }
+    }
+}

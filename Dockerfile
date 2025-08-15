@@ -42,7 +42,7 @@ RUN if [ -f pnpm-lock.yaml ]; then \
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
-# Expose port 4000
-EXPOSE 4000
+# Expose port 3017
+EXPOSE 3017
 
 CMD ["pnpm", "start"]
