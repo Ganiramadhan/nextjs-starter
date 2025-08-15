@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:24.0-cli' 
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     environment {
         DOCKER_REGISTRY = "registry.ganipedia.xyz:3017"
@@ -13,18 +18,16 @@ pipeline {
                 git(
                     branch: 'main',
                     url: 'https://github.com/ganiramadhan/ganipedia.git',
-                    credentialsId: 'github-https-token' // PAT credential
+                    credentialsId: 'github-https-token'
                 )
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh """
-                    docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
-                    """
-                }
+                sh """
+                docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+                """
             }
         }
 
@@ -45,12 +48,10 @@ pipeline {
 
         stage('Deploy Container') {
             steps {
-                script {
-                    sh """
-                    docker rm -f $IMAGE_NAME || true
-                    docker run -d --name $IMAGE_NAME -p 3017:3017 $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
-                    """
-                }
+                sh """
+                docker rm -f $IMAGE_NAME || true
+                docker run -d --name $IMAGE_NAME -p 3017:3017 $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                """
             }
         }
     }
