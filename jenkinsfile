@@ -11,7 +11,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 sshagent(credentials: ['github-ssh-key']) {
-                    // Pastikan 'github-ssh-key' adalah ID credential yang ada di Jenkins
                     git(
                         branch: 'main',
                         url: 'git@github.com:ganiramadhan/ganipedia.git'
