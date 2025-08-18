@@ -31,7 +31,10 @@ pipeline {
                     if (!lastVersion) { lastVersion = "0.0.0" }
                     echo "Last version: v${lastVersion}"
 
-                    def (major, minor, patch) = lastVersion.tokenize('.')*.toInteger()
+                    def parts = lastVersion.tokenize('.')
+                    def major = parts[0] as int
+                    def minor = parts[1] as int
+                    def patch = parts[2] as int
 
                     if (commitMsg.contains("BREAKING CHANGE") || commitMsg.toLowerCase().startsWith("feat!")) {
                         major += 1; minor = 0; patch = 0
