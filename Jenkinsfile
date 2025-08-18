@@ -5,11 +5,10 @@ pipeline {
         DOCKER_REGISTRY = "registry.ganipedia.xyz:3017"
         IMAGE_NAME = "ganipedia"
         IMAGE_TAG = "latest"
-        COMMIT_HASH = "${env.GIT_COMMIT.take(7)}" // ambil 7 char pertama commit
     }
 
     options {
-        skipDefaultCheckout() // cegah auto checkout default
+        skipDefaultCheckout()
     }
 
     stages {
@@ -20,6 +19,18 @@ pipeline {
                     url: 'https://github.com/ganiramadhan/ganipedia.git',
                     credentialsId: 'github-https-token'
                 )
+            }
+        }
+
+        stage('Set Commit Hash') {
+            steps {
+                script {
+                    env.COMMIT_HASH = sh(
+                        script: "git rev-parse --short HEAD",
+                        returnStdout: true
+                    ).trim()
+                    echo "Commit hash: ${env.COMMIT_HASH}"
+                }
             }
         }
 
