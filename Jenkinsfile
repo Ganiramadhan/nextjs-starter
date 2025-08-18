@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        git 'Default'   // pastikan "Default" sudah dikonfigurasi di Jenkins
+    }
+
     environment {
         DOCKER_REGISTRY = "registry.ganipedia.xyz:3017"
         IMAGE_NAME = "ganipedia"
@@ -14,11 +18,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git(
-                    branch: 'main',
-                    url: 'https://github.com/ganiramadhan/ganipedia.git',
-                    credentialsId: 'github-https-token'
-                )
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/ganiramadhan/ganipedia.git',
+                        credentialsId: 'github-https-token'
+                    ]]
+                ])
             }
         }
 
@@ -37,8 +44,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
-                             -t $DOCKER_REGISTRY/$IMAGE_NAME:$COMMIT_HASH .
+                  docker build \
+                    -t $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
+                    -t $DOCKER_REGISTRY/$IMAGE_NAME:$COMMIT_HASH .
                 """
             }
         }
@@ -51,9 +59,9 @@ pipeline {
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh """
-                    echo "$DOCKER_PASS" | docker login $DOCKER_REGISTRY -u "$DOCKER_USER" --password-stdin
-                    docker push $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
-                    docker push $DOCKER_REGISTRY/$IMAGE_NAME:$COMMIT_HASH
+                      echo "$DOCKER_PASS" | docker login $DOCKER_REGISTRY -u "$DOCKER_USER" --password-stdin
+                      docker push $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                      docker push $DOCKER_REGISTRY/$IMAGE_NAME:$COMMIT_HASH
                     """
                 }
             }
@@ -62,8 +70,8 @@ pipeline {
         stage('Deploy Container') {
             steps {
                 sh """
-                docker rm -f $IMAGE_NAME || true
-                docker run -d \
+                  docker rm -f $IMAGE_NAME || true
+                  docker run -d \
                     --name $IMAGE_NAME \
                     -p 3017:3017 \
                     --restart always \
