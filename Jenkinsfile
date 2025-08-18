@@ -11,13 +11,11 @@ pipeline {
         stage('Deploy Container') {
             steps {
                 sh '''
-                    # Stop & remove container lama kalau ada
-                    docker rm -f ganipedia || true
+                    docker rm -f next-starter || true
                     
-                    # Jalankan container baru
                     docker run -d \
-                        --name ganipedia \
-                        -p 3017:3017 \
+                        --name next-starter \
+                        -p 3017:3000 \
                         ganipedia/next-starter:latest
                 '''
             }
