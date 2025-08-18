@@ -1,34 +1,13 @@
 pipeline {
     agent any
 
-    tools {
-        git 'Default'   // pastikan "Default" sudah dikonfigurasi di Jenkins
-    }
-
     environment {
         DOCKER_REGISTRY = "registry.ganipedia.xyz:3017"
         IMAGE_NAME = "ganipedia"
         IMAGE_TAG = "latest"
     }
 
-    options {
-        skipDefaultCheckout()
-    }
-
     stages {
-        stage('Checkout') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/ganiramadhan/ganipedia.git',
-                        credentialsId: 'github-https-token'
-                    ]]
-                ])
-            }
-        }
-
         stage('Set Commit Hash') {
             steps {
                 script {
