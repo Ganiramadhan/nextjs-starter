@@ -19,12 +19,12 @@ pipeline {
                     echo "Last commit: ${commitMsg}"
 
                     def lastVersion = sh(
-                        script: """curl -s "https://hub.docker.com/v2/repositories/${env.IMAGE_NAME}/tags?page_size=100" \
-                            | jq -r '.results[].name' \
-                            | grep -E '^v[0-9]+\\.[0-9]+\\.[0-9]+$' \
-                            | sed 's/v//' \
-                            | sort -V \
-                            | tail -n 1""",
+                        script: 'curl -s "https://hub.docker.com/v2/repositories/' + env.IMAGE_NAME + '/tags?page_size=100" ' +
+                                '| jq -r \'.results[].name\' ' +
+                                '| grep -E \'^v[0-9]+\\.[0-9]+\\.[0-9]+$\' ' +
+                                '| sed \'s/v//\' ' +
+                                '| sort -V ' +
+                                '| tail -n 1',
                         returnStdout: true
                     ).trim()
 
