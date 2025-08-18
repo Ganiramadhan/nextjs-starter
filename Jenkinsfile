@@ -5,6 +5,11 @@ pipeline {
         DOCKER_REGISTRY = "registry.ganipedia.xyz:3017"
         IMAGE_NAME = "ganipedia"
         IMAGE_TAG = "latest"
+        COMMIT_HASH = "${env.GIT_COMMIT.take(7)}" // ambil 7 char pertama commit
+    }
+
+    options {
+        skipDefaultCheckout() // cegah auto checkout default
     }
 
     stages {
@@ -21,7 +26,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+                docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
+                             -t $DOCKER_REGISTRY/$IMAGE_NAME:$COMMIT_HASH .
                 """
             }
         }
@@ -36,6 +42,7 @@ pipeline {
                     sh """
                     echo "$DOCKER_PASS" | docker login $DOCKER_REGISTRY -u "$DOCKER_USER" --password-stdin
                     docker push $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                    docker push $DOCKER_REGISTRY/$IMAGE_NAME:$COMMIT_HASH
                     """
                 }
             }
@@ -45,7 +52,11 @@ pipeline {
             steps {
                 sh """
                 docker rm -f $IMAGE_NAME || true
-                docker run -d --name $IMAGE_NAME -p 3017:3017 $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                docker run -d \
+                    --name $IMAGE_NAME \
+                    -p 3017:3017 \
+                    --restart always \
+                    $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
                 """
             }
         }
