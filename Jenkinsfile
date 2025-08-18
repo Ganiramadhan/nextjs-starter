@@ -15,7 +15,7 @@ pipeline {
                     
                     docker run -d \
                         --name next-starter \
-                        -p 3017:3017 \
+                        -p 3017:3000 \
                         ganipedia/next-starter:latest
                 '''
             }
